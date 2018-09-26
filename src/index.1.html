@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Ishtar</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+  <button onclick="oauthSignIn()">Google Sign-In</button>
+  <button onclick=useToken()>Use token</button>
+  <app-root></app-root>
+</body>
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+
+  function useToken() {
+    const t = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+    console.log(t);
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET',
+      'https://www.googleapis.com/drive/v3/about?fields=user,storageQuota');
+    xhr.setRequestHeader('Authorization',
+      'Bearer ' + t);
+    xhr.send();
+  }
+  /*
+  * Create form to request access token from Google's OAuth 2.0 server.
+  */
+  function oauthSignIn() {
+    if(!gapi.auth2.getAuthInstance().isSignedIn.get()) {
+      gapi.auth2.getAuthInstance().signIn({ scope: 'profile email' }).then(() => {
+        const t = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+      });
+    }
+  }
+  function setup() {
+    // Google's OAuth 2.0 endpoint for requesting an access token
+    var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+    // Create <form> element to submit parameters to OAuth 2.0 endpoint.
+
+    // Parameters to pass to OAuth 2.0 endpoint.
+    var params = {
+      'client_id': '793005067284-2t8n6ast85ksm6mh7q43ejog760ljs4k.apps.googleusercontent.com',
+      'redirect_uri': 'http://localhost:4200',
+      /*'response_type': 'token',*/
+      'scope': 'https://www.googleapis.com/auth/drive.metadata.readonly',
+      /*'include_granted_scopes': 'true',*/
+      /*'state': 'pass-through value'*/
+    };
+
+    gapi.auth2.init(params).then((rsp) => {
+      const p = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+      console.log(p);
+      const t = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+      console.log(t);
+      console.log('signed in: ')
+    },
+     (er) => {
+      console.error(er);
+    })
+  }
+
+  gapi.load('auth2', setup);
+</script>
+
+</html>
