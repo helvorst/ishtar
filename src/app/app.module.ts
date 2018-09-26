@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { GatesComponent } from './gates/gates.component';
+import { AnimalService } from 'src/app/animal.service';
 
 
 @NgModule({
@@ -14,7 +15,7 @@ import { GatesComponent } from './gates/gates.component';
   imports: [
     BrowserModule
   ],
-  providers: [],
+  providers: [{provide: AnimalService, useClass: AnimalService}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
